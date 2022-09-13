@@ -38,7 +38,7 @@
 
 .arrowIcon {
   position: absolute;
-  left: calc(50% - 12px);
+  left: calc(50% - 20px);
 
 }
 
@@ -62,12 +62,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 40px;
 }
 
 .tile {
   width: 50%;
-  margin: 1rem;
-
 }
 
 .textarea {
@@ -106,9 +105,10 @@
   line-height: 1.5;
 }
 
-.logo {
-  height: 1em;
-  margin-left: 0.5rem;
+.similarityScore {
+  width: 100%;
+  text-align: right;
+  padding-right: 2%;
 }
 
 @media (max-width: 600px) {
@@ -119,6 +119,7 @@
   .tile {
     width: 100%;
   }
+  
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,10 +1,10 @@
 const HASHSIZE = Number.MAX_SAFE_INTEGER;
 
-type Fingerprint = {
+export type Fingerprint = {
     hashes: number[];
     indices: number[];
 } 
- 
+
 function FindMatchIndices(Array1:number[], Array2:number[]): number[] {
     let indices = [];
 
@@ -128,7 +128,7 @@ function StripString(text: string): string {
         }
     } 
 
-    return strippedText
+    return strippedText.toLocaleLowerCase()
 }
 
 function Windows(w: number, values: number[]): number[][] {
@@ -165,24 +165,40 @@ function FingerprintDocument(document: string,  k: number, guarantee: number): [
     return [fingerprint, docLen];
 }
 
-export function CompareDocuments(document1: string, document2:string) {
+function CompareDocuments(document1: string, document2:string) {
     let k = 4;
     let guarantee = 4; //gurantee must be >= to k
 
     let [fingerprint1, docLen1] = FingerprintDocument(document1, k, guarantee);
     let [fingerprint2, docLen2] = FingerprintDocument(document2, k, guarantee);
 
-    let [matchPos1, a] = FindMatchPositions(fingerprint1, fingerprint2);
-    let [matchPos2, b] = FindMatchPositions(fingerprint2, fingerprint1);
+    let [matchPos1, matchPos2] = FindMatchPositions(fingerprint1, fingerprint2);
+    //let [matchPos2, b] = FindMatchPositions(fingerprint2, fingerprint1);
 
     let similarity1 = SimilarityScore(matchPos1, k, docLen1);
     let similarity2 = SimilarityScore(matchPos2, k, docLen2);
 
     let maxSimilarity = Math.max(similarity1, similarity2);
 
+
     return maxSimilarity*100;
 
 }
+
+function calculateSimilarity(fingerprint1: Fingerprint, fingerprint2: Fingerprint, docLen1: number, docLen2: number, k: number) {
+    let [matchPos1, matchPos2] = FindMatchPositions(fingerprint1, fingerprint2);
+    //let [matchPos2, b] = FindMatchPositions(fingerprint2, fingerprint1);
+
+    let similarity1 = SimilarityScore(matchPos1, k, docLen1);
+    let similarity2 = SimilarityScore(matchPos2, k, docLen2);
+
+    let maxSimilarity = Math.max(similarity1, similarity2);
+
+
+    return maxSimilarity*100;
+}
+
+export {calculateSimilarity, CompareDocuments, FingerprintDocument};
 
 
 
