@@ -69,10 +69,19 @@
   width: 50%;
 }
 
-.textarea {
+.codeEditor {
   resize: none;
   height: 500px;
   width: 100%;
+  border: grey solid 1px;
+  border-radius: 5px;
+  padding-top: 1%;
+  overflow: hidden;
+
+}
+
+.codeEditor:focus-within {
+  border: black solid 1px;
 }
 
 .card {

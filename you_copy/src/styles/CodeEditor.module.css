@@ -1,0 +1,29 @@
+  .CodeEditor_default {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .lineNumber_textarea {
+    height: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+
+    background-color: inherit;
+    opacity: 0.8;
+    width: 4ch;
+    overflow: hidden;
+    text-align: right;
+    padding-right: 1ch;
+  }
+
+  .userInput_textarea {
+    height: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+
+    flex-grow: 1;
+    overflow-wrap: normal;
+
+  }
