@@ -5,68 +5,42 @@ import {IconButton} from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 
 import styles from '../styles/Home.module.css'
-import config from '../lib/config'
+import { config } from '../lib/config'
+
+import { useAppSelector, useAppDispatch } from '../store/hooks'
+import {setReferenceCodeInput, setOriginalCodeInput, swapCodeInputFields, setIsDebouncing, updateComparison, selectReferenceCodeInput, selectOriginalCodeInput, selectIsDebouncing, selectSimilarityScore} from '../store/slices/comparisonAppSlice'
 
 import CodeEditor from '../components/CodeEditor'
 
 
-import { calculateSimilarity, Fingerprint, FingerprintDocument} from '../services/winnowService';
-import React, { useState, useRef} from 'react'  
+
+import React, {useRef} from 'react'  
 
 
 const Home: NextPage = () => {
-  //Component state
-  const [originalCodeInput, setOriginalCodeInput] = useState('');
-  const [referenceCodeInput, setReferenceCodeInput] = useState('');
-  const [similarityScore, setSimilarityScore] = useState<number | undefined>(undefined);
+
+  const dispatch = useAppDispatch();
   
-  //Debouncing - update comparison when user has stopped typing
-  const [isDebouncing, setIsDebouncing] = useState(false);
+  const originalCodeInput = useAppSelector(selectOriginalCodeInput);
+  const referenceCodeInput = useAppSelector(selectReferenceCodeInput);
+  const isDebouncing = useAppSelector(selectIsDebouncing);
+  const similarityScore = useAppSelector(selectSimilarityScore);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const updateComparison = () => {
-    if (originalCodeInput != '' && referenceCodeInput != '') {
-      let [fingerprint1, docLen1] = FingerprintDocument(originalCodeInput, config.k, config.guarantee);
-      let [fingerprint2, docLen2] = FingerprintDocument(referenceCodeInput, config.k, config.guarantee);
-
-      
-      if (docLen1 !== 0 && docLen2 !== 0) {
-        let score = calculateSimilarity(fingerprint1, fingerprint2, docLen1, docLen2, config.k);
-        setSimilarityScore(score);
-      }
-    }
-  };
-
-  const updateDebouce = () => {
+  const updateDebounce = () => {
 
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
     }
 
-    setIsDebouncing(true);
+    dispatch(setIsDebouncing(true));
 
     timerRef.current = setTimeout(() => {
-      updateComparison();
-      setIsDebouncing(false);
+      dispatch(updateComparison())
+      dispatch(setIsDebouncing(false));
     }, config.comparisonDebounceTime);
 
-  }
-
-  //Handler function for text areas
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    setter(event.target.value);
-    
-    updateDebouce();
-  };
-
-  //Swap code input fields
-  const swapCodeInputFields = () => {
-    const tempText = originalCodeInput;
-
-    setOriginalCodeInput(referenceCodeInput);
-    setReferenceCodeInput(tempText);
-
-    updateComparison();
   }
 
   return (
@@ -89,14 +63,14 @@ const Home: NextPage = () => {
         </div>
         <div className={styles.gridContainer}>
           <div className={styles.grid}>
-            <IconButton color="inherit" className={styles.arrowIcon} onClick={swapCodeInputFields}>
+            <IconButton color="inherit" className={styles.arrowIcon} onClick={() => dispatch(swapCodeInputFields())}>
               <SwapHorizIcon  />
             </IconButton>
             <div className={styles.tile}>
               <h3>ORIGINAL CODE</h3>
               <CodeEditor className={styles.codeEditor} 
                           value={originalCodeInput} 
-                          onChange={(e) => handleChange(e, setOriginalCodeInput)}
+                          onChange={(e) => {dispatch(setOriginalCodeInput(e.target.value)); updateDebounce()}}
                     />
             </div>
 
@@ -104,7 +78,7 @@ const Home: NextPage = () => {
               <h3>REFERENCE CODE</h3>
               <CodeEditor className={styles.codeEditor} 
                           value={referenceCodeInput} 
-                          onChange={(e) => handleChange(e, setReferenceCodeInput)}
+                          onChange={(e) => {dispatch(setReferenceCodeInput(e.target.value)); updateDebounce()}}
                     />
             </div>
 
