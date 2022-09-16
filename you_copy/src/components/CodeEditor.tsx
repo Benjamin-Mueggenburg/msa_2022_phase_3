@@ -1,6 +1,5 @@
 import styles from '../styles/CodeEditor.module.css';
 import React, { FunctionComponent, useRef} from 'react'
-import Editor from 'react-simple-code-editor';
 import { useEffect } from 'react';
 
 
@@ -33,7 +32,6 @@ const CodeEditor: FunctionComponent<CodeEditorProps> = ({className, value, onCha
     };
 
     const handleScroll = () => {
-        let scrollY = codeInputRef.current?.scrollTop;
         if (lineNumRef.current !== null && codeInputRef.current !== null) {
             lineNumRef.current.scrollTop = codeInputRef.current?.scrollTop | 0;
         }
